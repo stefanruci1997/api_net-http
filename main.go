@@ -195,8 +195,11 @@ func updateUserWithPatch(w http.ResponseWriter, r *http.Request) {
 func deleteUser(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/users/"):]
 	var user User
-	db.First(&user, id)
+	err := db.First(&user, id).Error
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+
+	}
 	db.Delete(&user)
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "User deleted successfully")
+	w.WriteHeader(http.StatusNoContent)
 }
